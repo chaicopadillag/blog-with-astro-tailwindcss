@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+
+type Props = {
+  author: {
+    id: string;
+    name: string;
+    role: string;
+    bio: string;
+    avatar: string;
+    twitter: string;
+    linkedin: string;
+    github: string;
+  };
+};
+
+const { author } = Astro.props;
+const { name, role, bio, avatar, twitter, linkedin, github } = author;
+---
+
+<!-- component -->
+<div class='container mx-auto my-10 bg-white rounded-lg shadow-md p-5'>
+  <Image class='w-32 h-32 rounded-full mx-auto' quality={'mid'} src={avatar} width={100} height={100} alt='Profile picture' />
+  <h2 class='text-center text-2xl font-semibold mt-3'>{name}</h2>
+  <p class='text-center text-gray-600 mt-1'>{role}</p>
+  <div class='flex justify-center mt-5'>
+    <a href={`https://x.com/${twitter}`} class='text-blue-500 hover:text-blue-700 mx-3'>Twitter</a>
+    <a href={linkedin} class='text-blue-500 hover:text-blue-700 mx-3'>LinkedIn</a>
+    <a href={github} class='text-blue-500 hover:text-blue-700 mx-3'>GitHub</a>
+  </div>
+  <div class='mt-5'>
+    <h3 class='text-xl font-semibold'>Bio</h3>
+    <p class='text-gray-600 mt-2'>
+      {bio}
+    </p>
+  </div>
+  <div class='mt-5 text-right'>
+    <a href={`/authors/${author.id}`} class='text-white bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded'> Read More </a>
+  </div>
+</div>
