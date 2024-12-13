@@ -1,0 +1,25 @@
+---
+import { DateFormatter } from '@utils/formatter';
+import { Image } from 'astro:assets';
+
+const { title, date, description, image, url, slug } = Astro.props;
+---
+
+<div class='lg:flex'>
+  <Image
+    class='object-cover w-full h-56 rounded-lg lg:w-64'
+    src={image}
+    alt={title}
+    width={500}
+    height={500}
+    quality={'low'}
+    loading={'lazy'}
+    transition:name={`${slug}-image`}
+  />
+
+  <div class='flex flex-col justify-between py-6 lg:mx-6'>
+    <a href={url} class='text-xl font-semibold text-gray-800 hover:underline dark:text-white'>{description}</a>
+
+    <span class='text-sm text-gray-500 dark:text-gray-300'>{DateFormatter.format(date)}</span>
+  </div>
+</div>

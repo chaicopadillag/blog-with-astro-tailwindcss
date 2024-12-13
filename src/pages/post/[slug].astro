@@ -1,0 +1,62 @@
+---
+import type { GetStaticPaths, GetStaticPathsResult } from 'astro';
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import Layout from 'src/layouts/Layout.astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('blog');
+
+  const paths: GetStaticPathsResult = posts.map((post) => ({
+    params: {
+      slug: post.slug
+    },
+    props: {
+      post: post
+    }
+  }));
+
+  return paths;
+}) satisfies GetStaticPaths;
+
+type Props = {
+  post: CollectionEntry<'blog'>;
+};
+
+const { post } = Astro.props;
+
+const { data } = post;
+const { title, author, image } = data;
+const { Content, headings } = await post.render();
+---
+
+<Layout title={title}>
+  <article class='prose dark:prose-dark max-w-none'>
+    <h1 class='text-xs text-gray-500 mb-0'>{author}</h1>
+    <Image
+      class='object-cover w-full h-[250px] rounded-lg my-5'
+      src={image}
+      alt={title}
+      width={600}
+      height={220}
+      transition:name={`${post.slug}-image`}
+    />
+    <!-- Tabla de contenido -->
+    <nav class='toc'>
+      <h2>Tabla de contenido</h2>
+      <ul>
+        {
+          headings.map((heading, index) => (
+            <li>
+              <a href={`#${heading.slug}`}>
+                {index + 1} - {heading.text}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <Content />
+    </nav>
+  </article>
+</Layout>
