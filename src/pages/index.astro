@@ -3,12 +3,12 @@ import { getCollection } from 'astro:content';
 import PostItem from 'src/components/PostItem.astro';
 import Layout from '../layouts/Layout.astro';
 
-const siteConfig = {
+export const siteConfig = {
   title: 'Blog',
   description: 'A blog built with Astro'
 };
 
-const posts = await getCollection('blog');
+const posts = await getCollection('blog', (post) => post.data.isDraft === false);
 ---
 
 <Layout title={'Posts'}>

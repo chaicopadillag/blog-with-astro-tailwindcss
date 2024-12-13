@@ -1,0 +1,53 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import PostItem from 'src/components/PostItem.astro';
+import Layout from 'src/layouts/Layout.astro';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const data = await getCollection('blog');
+  return paginate(data, { pageSize: 2 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+
+<Layout>
+  <div class='py-10 mx-auto container'>
+    <h1 class='text-3xl font-semibold capitalize lg:text-4xl text-white'>Blog paginate</h1>
+  </div>
+
+  <section class='bg-gray-900 mx-auto container' aria-label='Entradas de blog'>
+    <div class='grid grid-cols-1 gap-8 mt-8 md:mt-16 md:grid-cols-2'>
+      {page.data.map((post) => <PostItem {...post.data} url={`/post/${post.slug}`} slug={post.slug} />)}
+    </div>
+  </section>
+
+  <section aria-label='Controles' class='flex justify-between py-10 mx-auto container'>
+    <!--   page .. ?? prev   -->
+    <a
+      href={page.url.prev}
+      class:list={{
+        disabled: !page.url.prev
+      }}>Anteriores</a
+    >
+
+    <!--   page .. ?? next   -->
+    <a
+      href={page.url.next}
+      class:list={{
+        disabled: !page.url.next
+      }}>Siguientes</a
+    >
+  </section>
+</Layout>
+
+<style>
+  a {
+    @apply bg-blue-500 text-white p-2 rounded hover:bg-blue-600 cursor-pointer;
+  }
+
+  .disabled {
+    @apply bg-gray-600 hover:bg-gray-600;
+  }
+</style>

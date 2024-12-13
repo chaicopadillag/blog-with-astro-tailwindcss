@@ -1,0 +1,51 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import PostItem from 'src/components/PostItem.astro';
+import Layout from 'src/layouts/Layout.astro';
+
+export const getStaticPaths = (async () => {
+  const [authors, posts] = await Promise.all([getCollection('author'), getCollection('blog')]);
+
+  return authors.map((author) => ({
+    params: {
+      author: author.id
+    },
+    props: {
+      author: author.data,
+      posts: posts.filter((post) => post.data.author.id === author.id)
+    }
+  }));
+}) satisfies GetStaticPaths;
+
+const { posts, author } = Astro.props;
+---
+
+<Layout>
+  <section class='bg-gray-900'>
+    <div class='container px-6 py-10 mx-auto'>
+      <a href={'/blog/1'}>Regresar</a>
+      <h1 class='text-3xl font-semibold capitalize lg:text-4xl text-white'>Blog</h1>
+
+      <div class='text-md text-gray-400 mb-0 flex flex-row mt-2'>
+        <Image class='rounded-full' src={author.avatar} alt={author.name} width={50} height={50} />
+
+        <div class='flex flex-col ml-5'>
+          <a>{author.name}</a>
+          <span>Listado de todos mis posts</span>
+        </div>
+      </div>
+
+      <div class='grid grid-cols-1 gap-8 mt-8 md:mt-16 md:grid-cols-2'>
+        {posts.map((post) => <PostItem {...post.data} url={`/post/${post.slug}`} slug={post.slug} />)}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  a {
+    @apply text-blue-500 hover:underline;
+  }
+</style>

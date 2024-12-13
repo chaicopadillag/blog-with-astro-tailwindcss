@@ -1,8 +1,9 @@
 ---
+import { DateFormatter } from '@utils/formatter';
 import type { GetStaticPaths, GetStaticPathsResult } from 'astro';
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import Layout from 'src/layouts/Layout.astro';
 
 export const getStaticPaths = (async () => {
@@ -27,13 +28,28 @@ type Props = {
 const { post } = Astro.props;
 
 const { data } = post;
-const { title, author, image } = data;
+const { title, image, date } = data;
 const { Content, headings } = await post.render();
+const author = await getEntry('author', data.author.id);
 ---
 
 <Layout title={title}>
+  <a href='/'>Regresar</a>
   <article class='prose dark:prose-dark max-w-none'>
-    <h1 class='text-xs text-gray-500 mb-0'>{author}</h1>
+    <div class='flex flex-row mt-2 text-gray-400'>
+      <Image
+        class='object-cover w-12 h-12 rounded-full'
+        src={author.data.avatar}
+        alt={author.data.name}
+        width={48}
+        height={48}
+        transition:name={`${post.slug}-avatar`}
+      />
+      <div class='flex flex-col ml-4'>
+        <a href={`/blog/${author.id}`} class='text-xs'>{author.data.name}</a>
+        <span class='text-xs text-gray-200'>{DateFormatter.format(date)}</span>
+      </div>
+    </div>
     <Image
       class='object-cover w-full h-[250px] rounded-lg my-5'
       src={image}
